@@ -1,6 +1,8 @@
 const express = require('express');
 let app = express();
+const mongoose = require('mongoose');
 const Tarea = require('../models/tarea');
+const GeneraRandom = require('../controllers/creaAleatorios');
 
 // ============================
 // obtener todas las tareas
@@ -157,6 +159,28 @@ app.put('/tareas/:id', (req, res) => {
             tarea: tareaDB
         });
     });
+});
+
+// ============================
+// Precarga la base de datos
+// ============================
+app.get('/precargar', (req, res) => {
+    Tarea.collection.deleteMany(function(err) {
+        if (err) throw err;
+    });
+
+    let status = GeneraRandom.generaAleaorios();
+
+    if (status != true) {
+        return res.status(500).json({
+            ok: false
+        });
+    }
+    res.json({
+        ok: true,
+        mensaje: 'Base precargada con 50 registros'
+    });
+
 });
 
 module.exports = app;
